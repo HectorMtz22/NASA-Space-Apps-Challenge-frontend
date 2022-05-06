@@ -19,8 +19,13 @@ const ListOfEntities = (props) => {
       <audio autoPlay>
         <source src="/interestellar.mp3" />
       </audio>
-      {positions.map((position) => (
-        <Entity {...position} key={position.id} />
+      {positions.map(({ id, name, position, description }) => (
+        <Entity
+          name={name}
+          position={position}
+          description={description}
+          key={id}
+        />
       ))}
     </div>
   );

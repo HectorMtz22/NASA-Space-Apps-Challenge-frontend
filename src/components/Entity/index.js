@@ -1,3 +1,4 @@
+import React from 'react'
 import { Color } from "cesium";
 import { Entity } from "resium";
 
@@ -12,4 +13,4 @@ const EntityComponent = ({ name, position, description }) => {
   );
 };
 
-export default EntityComponent;
+export default React.memo(EntityComponent);
