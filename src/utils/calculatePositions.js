@@ -1,13 +1,7 @@
 import getPosition from "./getPosition";
 import { Cartesian3, JulianDate, SampledPositionProperty } from "cesium";
 
-const calculatePositions = ({
-  totalSeconds,
-  timestepInSeconds,
-  start,
-  tl1,
-  tl2,
-}) => {
+const calculatePositions = async ({ totalSeconds, timestepInSeconds, start, tl1, tl2 }) => {
   try {
     const positionsOverTime = new SampledPositionProperty();
     for (let i = 0; i < totalSeconds; i += timestepInSeconds) {
@@ -19,12 +13,15 @@ const calculatePositions = ({
         res.latitude,
         res.height
       );
-      positionsOverTime.addSample(time, position);
+      await queueMicrotask(() => positionsOverTime.addSample(time, position));
     }
     return positionsOverTime;
   } catch (e) {
     // console.error(e);
   }
-};
+}
+
+
+
 
 export default calculatePositions;
