@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import calculatePositions from "../utils/calculatePositions";
 import getPoints from "../utils/getPoints";
 
-export default function useElements({ start, timestepInSeconds, totalSeconds }) {
+export default function useElements(props) {
   const [positions, setPositions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   // const [limit, setLimit] = useState(0);
@@ -10,21 +10,18 @@ export default function useElements({ start, timestepInSeconds, totalSeconds }) 
   useEffect(() => {
     setIsLoading(true);
     (async () => {
-      let rawData = await getPoints(10000);
-      for (const element of rawData) {
-        const [id, name, tl1, tl2, description] = element
-        const res = await calculatePositions({ tl1, tl2, start, timestepInSeconds, totalSeconds })
-        // console.log(res)
-        const newData = {
-          id,
-          name,
-          description,
-          position: res
+      if (window.Worker) {
+        const myWorker = new Worker("worker.js");
+        myWorker.postMessage(props);
+        myWorker.onmessage = (e) => {
+          setPositions(data => data.concat(e.data))
         }
 
-        setPositions(data => data.concat(newData))
-        setIsLoading(false);
+      } else {
+        console.log('Your browser doesn\'t support web workers.');
       }
+      setIsLoading(false);
+
 
     })();
     // let newData = await rawData.map(([id, name, tl1, tl2, description]) => {
@@ -36,7 +33,7 @@ export default function useElements({ start, timestepInSeconds, totalSeconds }) 
     //     position: res,
     //   };
     // });
-  }, [start, timestepInSeconds, totalSeconds]);
+  }, [props]);
 
   return { positions, isLoading }
 }
